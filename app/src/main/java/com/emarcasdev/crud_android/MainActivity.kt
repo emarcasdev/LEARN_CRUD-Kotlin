@@ -3,10 +3,12 @@ package com.emarcasdev.crud_android
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,6 +19,8 @@ import com.emarcasdev.crud_android.api.model.ProductBody
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -25,12 +29,16 @@ class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView;
     private lateinit var textEmpty: TextView;
     private lateinit var floatingActionButton: FloatingActionButton;
+    private lateinit var search: EditText;
 
     // Adapter para mostrar las tarjetas
     private lateinit var adapter: ProductAdapter;
 
     // Lista de productos local
     private val products = mutableListOf<Product>();
+
+    // Job para cancelar la busqyeda si se sige escribiendo
+    private var searchJob: Job? = null;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState);
@@ -40,6 +48,7 @@ class MainActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerProducts);
         textEmpty = findViewById(R.id.textEmpty);
         floatingActionButton = findViewById(R.id.openNewProduct);
+        search = findViewById(R.id.inputSearch);
 
         // Creamos el adaptador para las opciones de editar y eliminar
         adapter = ProductAdapter(
@@ -75,7 +84,17 @@ class MainActivity : AppCompatActivity() {
         recyclerView.adapter = adapter;
 
         // Cargar los productos
-        loadProducts();
+        loadProducts(null);
+
+        // Buscar por nombre cuando se escribe en el buscador
+        search.addTextChangedListener { text ->
+            searchJob?.cancel();
+            searchJob = lifecycleScope.launch {
+                delay(300);
+                val name = text?.toString()?.trim().takeUnless { text -> text.isNullOrEmpty() };
+                loadProducts(name);
+            }
+        }
 
         // Boton de accion para crear un nuevo producto
         floatingActionButton.setOnClickListener {
@@ -125,11 +144,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Función para cargar todos los productos
-    private fun loadProducts() {
+    private fun loadProducts(name: String? = null) {
         lifecycleScope.launch {
             try {
                 val response = withContext(Dispatchers.IO) {
-                    ApiClient.service.getProducts();
+                    ApiClient.service.getProducts(name);
                 }
                 if (response.isSuccessful) {
                     // Recuperamos la lista de productos
@@ -192,7 +211,7 @@ class MainActivity : AppCompatActivity() {
                             updateListProducts();
                             Toast.makeText(this@MainActivity, "Producto actualizado correctamente", Toast.LENGTH_SHORT).show();
                         } else {
-                            loadProducts();
+                            loadProducts(null);
                         }
                     }
                 } else {

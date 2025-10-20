@@ -9,7 +9,7 @@ import retrofit2.http.*
 interface ApiService {
     // Endpoint para recuperar todos los productos
     @GET("api/products")
-    suspend fun getProducts(): Response<List<Product>>;
+    suspend fun getProducts(@Query("name") name: String? = null): Response<List<Product>>;
 
     // Endpoint para crear un nuevo producto
     @POST("api/product")

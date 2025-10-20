@@ -35,8 +35,8 @@
     <!-- Logo -->
     <ImageView
         android:id="@+id/imgLogo"
-        android:layout_width="300dp"
-        android:layout_height="150dp"
+        android:layout_width="238dp"
+        android:layout_height="114dp"
         android:layout_marginTop="48dp"
         android:contentDescription="@string/app_name"
         android:elevation="8dp"
@@ -76,17 +76,45 @@
             android:visibility="gone"/>
     </com.google.android.material.card.MaterialCardView>
 
+    <!-- Buscador -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/search"
+        style="@style/Widget.Material3.TextInputLayout.FilledBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="12dp"
+        android:hint="Buscar producto"
+        app:layout_constraintTop_toBottomOf="@id/imgLogo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:boxBackgroundColor="#ECECEC"
+        app:boxBackgroundMode="filled"
+        app:expandedHintEnabled="true"
+        app:hintTextColor="@android:color/black">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/inputSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:maxLines="1"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
     <!-- Lista de tarjetas -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerProducts"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="250dp"
         android:padding="8dp"
-        android:layout_marginTop="210dp"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
     <!-- Boton de crear -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
